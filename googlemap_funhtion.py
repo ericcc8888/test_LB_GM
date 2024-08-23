@@ -6,10 +6,25 @@ from linebot.models.flex_message import BubbleContainer, TextComponent, BoxCompo
 from linebot.exceptions import InvalidSignatureError
 
 from API_KEYS import get_api_keys
-from flex_message_formmat import locations_flexmessage
-import sys,googlemaps
+from flex_message_formmat import locations_flexmessage,store_message
+from line_flex import line_store_flex
+import sys,googlemaps,requests
 
 app = Flask(__name__)
+
+business_time = '營業時間'
+telephone = 'tel:+1234556789'
+
+def get_photo_url(photo_reference, max_width=400):
+    """构建照片请求 URL"""
+    base_url = 'https://maps.googleapis.com/maps/api/place/photo'
+    params = {
+        'photoreference': photo_reference,
+        'maxwidth': max_width,
+        'key': keys['GOOGLEMAPS_API_KEY']
+    }
+    url = f"{base_url}?{requests.compat.urlencode(params)}"
+    return url
 
 # get channel_secret and channel_access_token from your environment variable
 keys = get_api_keys()
@@ -57,7 +72,7 @@ def handle_message(event):
     if event.message.text == "台灣美食":
         flex_message = FlexSendMessage(
         alt_text='This is a Flex Message',
-        contents= locations_flexmessage()
+        contents= line_store_flex(image_url, story_name, star_num, store_address, business_time, telephone)
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
 
@@ -73,11 +88,26 @@ def handle_message(event):
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
     location = event.message
+    # places_text = 
+
+    # reply_text = TextSendMessage(text=places_text)
+    # line_bot_api.reply_message(event.reply_token, reply_text)
+
+    flex_message = FlexSendMessage(
+    alt_text='This is a Flex Message',
+    # contents= line_store_flex(image_url, story_name, star_num, store_address, business_time, telephone)
+    # )
+    contents= get_store_info(location)
+    )
+    line_bot_api.reply_message(event.reply_token, flex_message)
+#==============================================================
+
+def get_store_info(location):
     # Geocoding an address
     origin_location = {'lat':location.latitude, 'lng':location.longitude}
 
     # 使用 Places API 搜尋附近500公尺內的餐廳
-    places_result = gmaps.places_nearby(location=origin_location, radius=500, type='restaurant')
+    places_result = gmaps.places_nearby(location=origin_location, radius=100, type='restaurant')
 
     places_locations = []
     for place in places_result['results']:
@@ -95,6 +125,15 @@ def handle_message(event):
         place_location = place['geometry']['location']  # 獲取餐廳的經緯度
         lat = place_location['lat']
         lng = place_location['lng']
+        place_id = place.get('place_id')
+        place_phtot = place.get('photos',[])
+        place_rate = place.get('rating')
+
+        if place_phtot:
+            photo_reference = place_phtot[0].get('photo_reference')
+            photo_url = get_photo_url(photo_reference)
+        else:
+            photo_reference = ""
         
         # 獲取距離資訊
         distance_info = distances['rows'][0]['elements'][i]
@@ -109,13 +148,17 @@ def handle_message(event):
             # print(f"地址: {detailed_address}")
             # print(f"距離: {distance_text}m")
             # print(f"============================================")
-            places_text += f"餐廳名稱:{name}\n 地址:{detailed_address}\n 距離:{distance_text}m\n ======================\n"
+            # places_text += f"餐廳名稱:{name}\n ID:{place_id}\n  地址:{detailed_address}\n 距離:{distance_text}m\n ======================\n"
+            # places_text += f"{photo_reference} \n"
+            places_text = line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone)
+            print(places_text)
         else:
-            places_text += f"餐廳名稱: {name} \n 地址: 無法獲取\n 距離: {distance_text}m\n ======================\n"
+            # places_text += f"餐廳名稱: {name} \n 地址: 無法獲取\n 距離: {distance_text}m\n ======================\n"
+            # places_text += f"{photo_reference} \n"
+           places_text =  line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone)
+        print(places_text)
+        return places_text
 
-    reply_text = TextSendMessage(text=places_text)
-    line_bot_api.reply_message(event.reply_token, reply_text)
-#==============================================================
 
 if __name__ == "__main__":
     app.run(debug=True)

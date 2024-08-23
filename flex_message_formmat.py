@@ -76,3 +76,100 @@ def locations_flexmessage():
     }
 
     return contents
+
+#選擇圖卡的flexmassage
+def store_message(store_name , open_status, rate_star):
+   contents =  {
+  "type": "carousel",
+  "contents": [
+    {
+      "type": "bubble",
+      "size": "micro",
+      "hero": {
+        "type": "image",
+        "url": "https://developers-resource.landpress.line.me/fx/clip/clip10.jpg",
+        "size": "full",
+        "aspectMode": "cover",
+        "aspectRatio": "320:213"
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": store_name,
+            "weight": "bold",
+            "size": "sm",
+            "wrap": True
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "contents": [
+              {
+                "type": "icon",
+                "size": "xs",
+                "url": "https://developers-resource.landpress.line.me/fx/img/review_gold_star_28.png"
+              },
+              {
+                "type": "icon",
+                "size": "xs",
+                "url": "https://developers-resource.landpress.line.me/fx/img/review_gold_star_28.png"
+              },
+              {
+                "type": "icon",
+                "size": "xs",
+                "url": "https://developers-resource.landpress.line.me/fx/img/review_gold_star_28.png"
+              },
+              {
+                "type": "icon",
+                "size": "xs",
+                "url": "https://developers-resource.landpress.line.me/fx/img/review_gold_star_28.png"
+              },
+              {
+                "type": "icon",
+                "size": "xs",
+                "url": "https://developers-resource.landpress.line.me/fx/img/review_gray_star_28.png"
+              },
+              {
+                "type": "text",
+                "text": rate_star,
+                "size": "xs",
+                "color": "#8c8c8c",
+                "margin": "md",
+                "flex": 0
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "box",
+                "layout": "baseline",
+                "spacing": "sm",
+                "contents": [
+                  {
+                    "type": "text",
+                    "text": open_status,
+                    "wrap": True,
+                    "color": "#8c8c8c",
+                    "size": "xs",
+                    "flex": 5
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "spacing": "sm",
+        "paddingAll": "13px"
+      }
+    }
+  ]
+}
+   return contents
+
+    
