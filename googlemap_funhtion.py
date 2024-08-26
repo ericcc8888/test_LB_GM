@@ -6,9 +6,9 @@ from linebot.models.flex_message import BubbleContainer, TextComponent, BoxCompo
 from linebot.exceptions import InvalidSignatureError
 
 from API_KEYS import get_api_keys
-from flex_message_formmat import locations_flexmessage,store_message
 from line_flex import line_store_flex
 import sys,googlemaps,requests
+from flex_message_formmat import rice_class, noodle_class, dessert_class, exotic_cuisine_class
 
 app = Flask(__name__)
 
@@ -69,15 +69,36 @@ def handle_message(event):
     # # 使用 reply_message 方法回應使用者
     # line_bot_api.reply_message(event.reply_token, reply_text)
 
-    if event.message.text == "台灣美食":
+    if event.message.text == "飯類":
         flex_message = FlexSendMessage(
         alt_text='This is a Flex Message',
-        contents= line_store_flex(image_url, story_name, star_num, store_address, business_time, telephone)
+        contents= rice_class()
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
 
+    if event.message.text == "麵類":
+        flex_message = FlexSendMessage(
+        alt_text='This is a Flex Message',
+        contents= noodle_class()
+        )
+        line_bot_api.reply_message(event.reply_token, flex_message)
+    
+    if event.message.text == "點心":
+        flex_message = FlexSendMessage(
+        alt_text='This is a Flex Message',
+        contents= dessert_class()
+        )
+        line_bot_api.reply_message(event.reply_token, flex_message)
+
+    if event.message.text == "異國料理":
+        flex_message = FlexSendMessage(
+        alt_text='This is a Flex Message',
+        contents= exotic_cuisine_class()
+        )
+        line_bot_api.reply_message(event.reply_token, flex_message)
+    
     else:
-        reply_text = TextSendMessage(text='請輸入"台灣美食"')
+        reply_text = TextSendMessage(text='輸入錯誤')
 
         # 使用 reply_message 方法回應使用者
         line_bot_api.reply_message(event.reply_token, reply_text)
