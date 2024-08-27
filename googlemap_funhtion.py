@@ -7,7 +7,7 @@ from linebot.exceptions import InvalidSignatureError
 
 from API_KEYS import get_api_keys
 from flex_message_formmat import locations_flexmessage,store_message
-from line_flex import line_store_flex
+from line_flex import line_store_flex , flex_formmat
 import sys,googlemaps,requests
 
 app = Flask(__name__)
@@ -69,18 +69,18 @@ def handle_message(event):
     # # 使用 reply_message 方法回應使用者
     # line_bot_api.reply_message(event.reply_token, reply_text)
 
-    if event.message.text == "台灣美食":
-        flex_message = FlexSendMessage(
-        alt_text='This is a Flex Message',
-        contents= line_store_flex(image_url, story_name, star_num, store_address, business_time, telephone)
-        )
-        line_bot_api.reply_message(event.reply_token, flex_message)
+    # if event.message.text == "台灣美食":
+    #     flex_message = FlexSendMessage(
+    #     alt_text='This is a Flex Message',
+    #     contents= line_store_flex(image_url, story_name, star_num, store_address, business_time, telephone)
+    #     )
+    #     line_bot_api.reply_message(event.reply_token, flex_message)
 
-    else:
-        reply_text = TextSendMessage(text='請輸入"台灣美食"')
+    # else:
+    reply_text = TextSendMessage(text='請輸入"台灣美食"')
 
         # 使用 reply_message 方法回應使用者
-        line_bot_api.reply_message(event.reply_token, reply_text)
+    line_bot_api.reply_message(event.reply_token, reply_text)
 
 #==============================================================
 
@@ -88,26 +88,21 @@ def handle_message(event):
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
     location = event.message
-    # places_text = 
-
-    # reply_text = TextSendMessage(text=places_text)
-    # line_bot_api.reply_message(event.reply_token, reply_text)
 
     flex_message = FlexSendMessage(
     alt_text='This is a Flex Message',
-    # contents= line_store_flex(image_url, story_name, star_num, store_address, business_time, telephone)
-    # )
     contents= get_store_info(location)
     )
+
+    print(f"====================={flex_message}==================")
     line_bot_api.reply_message(event.reply_token, flex_message)
-#==============================================================
+# ==============================================================
 
 def get_store_info(location):
     # Geocoding an address
     origin_location = {'lat':location.latitude, 'lng':location.longitude}
-
     # 使用 Places API 搜尋附近500公尺內的餐廳
-    places_result = gmaps.places_nearby(location=origin_location, radius=100, type='restaurant')
+    places_result = gmaps.places_nearby(location=origin_location, radius=100, keyword='滷肉飯')
 
     places_locations = []
     for place in places_result['results']:
@@ -118,7 +113,7 @@ def get_store_info(location):
                                     destinations=places_locations,
                                     units='metric')
 
-    places_text = ""
+    places_text = []
     # 列印每個餐廳的名稱、中文地址和距離
     for i, place in enumerate(places_result['results']):
         name = place.get('name')  # 獲取餐廳名稱
@@ -134,6 +129,7 @@ def get_store_info(location):
             photo_url = get_photo_url(photo_reference)
         else:
             photo_reference = ""
+            photo_url = "no photos"
         
         # 獲取距離資訊
         distance_info = distances['rows'][0]['elements'][i]
@@ -144,20 +140,12 @@ def get_store_info(location):
         
         if reverse_geocode_result:
             detailed_address = reverse_geocode_result[0]['formatted_address']
-            # print(f"餐廳名稱: {name}")
-            # print(f"地址: {detailed_address}")
-            # print(f"距離: {distance_text}m")
-            # print(f"============================================")
-            # places_text += f"餐廳名稱:{name}\n ID:{place_id}\n  地址:{detailed_address}\n 距離:{distance_text}m\n ======================\n"
-            # places_text += f"{photo_reference} \n"
-            places_text = line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone)
-            print(places_text)
+            places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone))
         else:
-            # places_text += f"餐廳名稱: {name} \n 地址: 無法獲取\n 距離: {distance_text}m\n ======================\n"
-            # places_text += f"{photo_reference} \n"
-           places_text =  line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone)
-        print(places_text)
-        return places_text
+            detailed_address = "無地址"
+            places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone))
+    flex_message = flex_formmat(places_text[0])
+    return flex_message
 
 
 if __name__ == "__main__":
