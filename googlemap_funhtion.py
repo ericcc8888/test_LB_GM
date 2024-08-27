@@ -75,24 +75,28 @@ def handle_message(event):
         contents= rice_class()
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
+
     elif event.message.text == "麵類":
         flex_message = FlexSendMessage(
         alt_text='This is a Flex Message',
         contents= noodle_class()
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
+
     elif event.message.text == "點心":
         flex_message = FlexSendMessage(
         alt_text='This is a Flex Message',
         contents= dessert_class()
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
+
     elif event.message.text == "異國料理":
         flex_message = FlexSendMessage(
         alt_text='This is a Flex Message',
         contents= exotic_cuisine_class()
         )
         line_bot_api.reply_message(event.reply_token, flex_message)   
+        
     else:
         reply_text = TextSendMessage(text='輸入錯誤')
 
