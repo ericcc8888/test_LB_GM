@@ -13,8 +13,7 @@ import line_flex
 
 app = Flask(__name__)
 
-business_time = '營業時間'
-telephone = 'tel:+1234556789'
+# telephone = "tel:+123456789"
 
 def get_photo_url(photo_reference, max_width=400):
     """构建照片请求 URL"""
@@ -76,6 +75,7 @@ def handle_message(event):
         contents= rice_class()
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
+        
 
     elif event.message.text == "麵類":
         flex_message = FlexSendMessage(
@@ -114,12 +114,7 @@ def handle_message(event):
     flex_message = FlexSendMessage(
     alt_text='This is a Flex Message',
     contents= get_store_info(location)
-    ),FlexSendMessage(
-    alt_text='This is a Flex Message',
-    contents= get_store_info(location)
     )
-
-    print(f"====================={flex_message}==================")
     line_bot_api.reply_message(event.reply_token, flex_message)
 # ==============================================================
 
@@ -127,7 +122,7 @@ def get_store_info(location, max_results=10):
     # Geocoding an address
     origin_location = {'lat':location.latitude, 'lng':location.longitude}
     # 使用 Places API 搜尋附近500公尺內的餐廳
-    places_result = gmaps.places_nearby(location=origin_location, radius=500, keyword='滷肉飯')
+    places_result = gmaps.places_nearby(location=origin_location, radius=500, keyword='滷肉飯', language="zh-TW")
 
     places_locations = []
     for place in places_result['results']:
@@ -148,6 +143,22 @@ def get_store_info(location, max_results=10):
         place_id = place.get('place_id')
         place_phtot = place.get('photos',[])
         place_rate = place.get('rating')
+        places_result = gmaps.place(place_id=place_id) # 獲取餐廳的url
+        opening_hours = place.get('opening_hours', {}) # 獲取餐廳的營業時間
+        googlemap_url = places_result["result"]['url'] 
+        business_time = opening_hours.get('open_now', '無營業時間')
+        telephone = 'tel:' + places_result["result"].get("formatted_phone_number", "0000").replace(" ", "")
+        print(f"======================{telephone}=======================")
+        print(f"======================{business_time}=======================")
+        
+
+        if business_time == True:
+            business_status = '營業中'
+            business_color = "#00A600"
+
+        else:
+            business_status = '已打烊'
+            business_color = "#CE0000"
 
         if place_phtot:
             photo_reference = place_phtot[0].get('photo_reference')
@@ -165,13 +176,14 @@ def get_store_info(location, max_results=10):
         
         if reverse_geocode_result:
             detailed_address = reverse_geocode_result[0]['formatted_address']
-            places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone))
+            places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_status, telephone, googlemap_url, business_color))
         else:
             detailed_address = "無地址"
-            places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone))
+            places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_status, telephone, googlemap_url, business_color))
     flex_message = flex_formmat(places_text[0])
     line_flex.flex_message_datas = []# 清空line_flex裡flex_message_datas的資料
     return flex_message
+
 
 
 if __name__ == "__main__":

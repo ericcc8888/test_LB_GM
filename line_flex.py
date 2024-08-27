@@ -39,7 +39,7 @@ flex_message_datas = []
     # # 生成星星圖示內容
     # return rateing_star
 
-def line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone):
+def line_store_flex(photo_url, name, place_rate, detailed_address, business_status, telephone, googlemap_url, business_color):
     flex_message_datas.append({
             "type": "bubble",
             "size": "micro",
@@ -48,7 +48,11 @@ def line_store_flex(photo_url, name, place_rate, detailed_address, business_time
                 "url": photo_url,
                 "size": "full",
                 "aspectMode": "cover",
-                "aspectRatio": "320:213"
+                "aspectRatio": "320:213",
+                "action":{
+                    "type":"uri",
+                    "uri": googlemap_url
+                }
             },
             "body": {
                 "type": "box",
@@ -96,15 +100,10 @@ def line_store_flex(photo_url, name, place_rate, detailed_address, business_time
                                 "contents": [
                                     {
                                         "type": "text",
-                                        "text": "營業時間",
-                                        "size": "xxs",
+                                        "text": business_status,
+                                        "size": "xs",
                                         "flex": 1,
-                                        "color": "#8c8c8c"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": business_time,
-                                        "size": "xs"
+                                        "color": business_color
                                     }
                                 ]
                             },
@@ -132,12 +131,6 @@ def flex_formmat(places_text):
         "contents": places_text
         }
     return flex_message
-
-# result = ee[:]  # 複製 ee 的內容作為返回值
-# ee.clear()  # 清空 ee
-# return result
-
-    
 
 # if __name__ == '__main__':
 #     xx()
