@@ -114,6 +114,9 @@ def handle_message(event):
     flex_message = FlexSendMessage(
     alt_text='This is a Flex Message',
     contents= get_store_info(location)
+    ),FlexSendMessage(
+    alt_text='This is a Flex Message',
+    contents= get_store_info(location)
     )
 
     print(f"====================={flex_message}==================")
@@ -167,7 +170,7 @@ def get_store_info(location, max_results=10):
             detailed_address = "無地址"
             places_text.append(line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone))
     flex_message = flex_formmat(places_text[0])
-    line_flex.ee = []
+    line_flex.flex_message_datas = []# 清空line_flex裡flex_message_datas的資料
     return flex_message
 
 

@@ -35,12 +35,12 @@ def generate_star_icons(store_rateing_star):
                                 })
     return rateing_star
 
-ee = []
+flex_message_datas = []
     # # 生成星星圖示內容
     # return rateing_star
 
 def line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone):
-    ee.append({
+    flex_message_datas.append({
             "type": "bubble",
             "size": "micro",
             "hero": {
@@ -123,7 +123,7 @@ def line_store_flex(photo_url, name, place_rate, detailed_address, business_time
                 "paddingAll": "13px"
             }
         })
-    return ee
+    return flex_message_datas
 
 def flex_formmat(places_text):
     
