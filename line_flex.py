@@ -1,7 +1,9 @@
-
 def generate_star_icons(store_rateing_star):
     # 將星數值轉換為整數（四捨五入）
-    rounded_star_num = round(store_rateing_star)
+    if store_rateing_star == None:
+        rounded_star_num = 0
+    else:
+        rounded_star_num = round(store_rateing_star)
 
     # 設定最大星數（5顆星）
     max_stars = 5
@@ -33,103 +35,109 @@ def generate_star_icons(store_rateing_star):
                                 })
     return rateing_star
 
-
-def xx(photo_url, name, place_rate, detailed_address, business_time, telephone):
-    xx = []
-    xx.append({
-                "type": "bubble",
-                "size": "micro",
-                "hero": {
-                    "type": "image",
-                    "url": photo_url,
-                    "size": "full",
-                    "aspectMode": "cover",
-                    "aspectRatio": "320:213"
-                },
-                "body": {
-                    "type": "box",
-                    "layout": "vertical",
-                    "contents": [
-                        {
-                            "type": "text",
-                            "text": name,
-                            "weight": "bold",
-                            "size": "sm",
-                            "wrap": True
-                        },
-                        {
-                            "type": "box",
-                            "layout": "baseline",
-                            "contents": generate_star_icons(place_rate)
-                        },
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                                {
-                                    "type": "box",
-                                    "layout": "baseline",
-                                    "spacing": "sm",
-                                    "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "地址",
-                                            "wrap": True,
-                                            "color": "#8c8c8c",
-                                            "size": "xxs",
-                                            "flex": 1
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": detailed_address,
-                                            "size": "xs"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "box",
-                                    "layout": "baseline",
-                                    "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "營業時間",
-                                            "size": "xxs",
-                                            "flex": 1,
-                                            "color": "#8c8c8c"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": business_time,
-                                            "size": "xs"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "button",
-                                    "action": {
-                                        "type": "uri",
-                                        "label": "撥打電話",
-                                        "uri": telephone
-                                    }
-                                }
-                            ]
-                        }
-                    ],
-                    "spacing": "sm",
-                    "paddingAll": "13px"
-                }
-            })
-    return xx
+ee = []
     # # 生成星星圖示內容
     # return rateing_star
 
 def line_store_flex(photo_url, name, place_rate, detailed_address, business_time, telephone):
+    ee.append({
+            "type": "bubble",
+            "size": "micro",
+            "hero": {
+                "type": "image",
+                "url": photo_url,
+                "size": "full",
+                "aspectMode": "cover",
+                "aspectRatio": "320:213"
+            },
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": name,
+                        "weight": "bold",
+                        "size": "sm",
+                        "wrap": True
+                    },
+                    {
+                        "type": "box",
+                        "layout": "baseline",
+                        "contents": generate_star_icons(place_rate)
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "spacing": "sm",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "地址",
+                                        "wrap": True,
+                                        "color": "#8c8c8c",
+                                        "size": "xxs",
+                                        "flex": 1
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": detailed_address,
+                                        "size": "xs"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "營業時間",
+                                        "size": "xxs",
+                                        "flex": 1,
+                                        "color": "#8c8c8c"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": business_time,
+                                        "size": "xs"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "撥打電話",
+                                    "uri": telephone
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "spacing": "sm",
+                "paddingAll": "13px"
+            }
+        })
+    return ee
+
+def flex_formmat(places_text):
+    
     flex_message = {
         "type": "carousel",
-        "contents": xx(photo_url, name, place_rate, detailed_address, business_time, telephone)
-    }
-
+        "contents": places_text
+        }
     return flex_message
+
+# result = ee[:]  # 複製 ee 的內容作為返回值
+# ee.clear()  # 清空 ee
+# return result
+
+    
 
 # if __name__ == '__main__':
 #     xx()
