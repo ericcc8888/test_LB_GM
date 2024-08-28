@@ -111,28 +111,28 @@ def handle_postback(event):
     if data == "action=first_layer_url":
         flex_message = FlexSendMessage(alt_text="米飯類選擇", contents=rice_class())
         line_bot_api.reply_message(event.reply_token, flex_message)
-        text = "請點選圖卡告訴我你想吃甚麼飯"
+        text = "請點選圖卡告訴我你想吃甚麼飯，上述沒有想吃的也可以打字輸入呦"
         text_message = TextSendMessage(text)
         line_bot_api.push_message(event.source.user_id, text_message)
         
     elif data == "action=first_layer_location":
         flex_message = FlexSendMessage(alt_text="麵類選擇", contents=noodle_class())
         line_bot_api.reply_message(event.reply_token, flex_message)
-        text = "請點選圖卡告訴我你想吃甚麼麵"
+        text = "請點選圖卡告訴我你想吃甚麼麵，上述沒有想吃的也可以打字輸入呦"
         text_message = TextSendMessage(text)
         line_bot_api.push_message(event.source.user_id, text_message)
 
     elif data == "action=location_option1":
         flex_message = FlexSendMessage(alt_text="甜點選擇", contents=dessert_class())
         line_bot_api.reply_message(event.reply_token, flex_message)
-        text = "請點選圖卡告訴我你想吃甚麼點心"
+        text = "請點選圖卡告訴我你想吃甚麼點心，上述沒有想吃的也可以打字輸入呦"
         text_message = TextSendMessage(text)
         line_bot_api.push_message(event.source.user_id, text_message)
 
     elif data == "action=location_option2":
         flex_message = FlexSendMessage(alt_text="異國料理選擇", contents=exotic_cuisine_class())
         line_bot_api.reply_message(event.reply_token, flex_message)
-        text = "請點選圖卡告訴我你想吃甚麼風格的料理"
+        text = "請點選圖卡告訴我你想吃甚麼風格的料理，上述沒有想吃的也可以打字輸入呦"
         text_message = TextSendMessage(text)
         line_bot_api.push_message(event.source.user_id, text_message)
     
@@ -143,13 +143,17 @@ def handle_location_message(event):
     global user_states
     user_id = event.source.user_id
     location = event.message
-    need_food = user_states.get(user_id, '')  # 獲取用戶的偏好
-
-    flex_message = FlexSendMessage(
-        alt_text='This is a Flex Message',
-        contents=get_store_info(location, need_food)
-    )
-    line_bot_api.reply_message(event.reply_token, flex_message)
+    need_food = user_states.get(user_id, None)  # 獲取用戶的偏好
+    if not need_food:
+        # 如果用戶沒有先輸入食物類型，提示用戶輸入
+        text_message = TextSendMessage(text="請先告訴小食主人想吃什麼，然後再傳送您的定位資訊。")
+        line_bot_api.reply_message(event.reply_token, text_message)
+    else:
+        flex_message = FlexSendMessage(
+            alt_text='This is a Flex Message',
+            contents=get_store_info(location, need_food)
+        )
+        line_bot_api.reply_message(event.reply_token, flex_message)
 
 #==============================================================
 # 處理文字訊息
@@ -158,7 +162,7 @@ def handle_text_message(event):
     global user_states
     user_id = event.source.user_id
     user_states[user_id] = event.message.text  # 保存用戶的偏好
-    text = "請傳送您的定位資訊"
+    text = "請傳送主人的定位資訊"
     text_message = TextSendMessage(text)
     line_bot_api.reply_message(event.reply_token, text_message)
 
