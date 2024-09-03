@@ -81,7 +81,7 @@ def get_store_info(location, need_food, max_results=10):
     # Geocoding an address
     origin_location = {'lat':location.latitude, 'lng':location.longitude}
     # 使用 Places API 搜尋附近500公尺內的餐廳
-    places_result = gmaps.places_nearby(location=origin_location, radius=500, keyword='滷肉飯', language="zh-TW")
+    places_result = gmaps.places_nearby(location=origin_location, radius=500, keyword=need_food, language="zh-TW")
 
     places_text = []
     flex_message_datas = []
