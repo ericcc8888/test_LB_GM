@@ -24,7 +24,7 @@ if channel_access_token is None:
 handler = WebhookHandler(channel_secret)
 line_bot_api = LineBotApi(channel_access_token)
 
-line_bot_scraper = line_flex.IFoodie
+line_bot_scraper = line_flex.line_bot_scraper_ifoodie
 
 @app.route("/callback", methods=['POST'])
 def callback():

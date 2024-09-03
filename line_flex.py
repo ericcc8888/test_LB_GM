@@ -136,7 +136,7 @@ def flex_formmat(places_text):
         }
     return flex_message
 
-class IFoodie:
+class line_bot_scraper_ifoodie:
     def __init__(self, area):
         self.area = area
 
