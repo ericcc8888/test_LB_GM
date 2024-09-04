@@ -242,3 +242,80 @@ class line_bot_scraper_ifoodie:
             })
         
         return flex_message_datas
+    
+def big_food_class():
+    contents = {
+  "type": "bubble",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "box",
+        "layout": "horizontal",
+        "contents": [
+          {
+            "type": "image",
+            "url": "https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2020/09/05/1/8488743.jpg&x=0&y=0&sw=0&sh=0&exp=3600",
+            "size": "5xl",
+            "aspectMode": "cover",
+            "aspectRatio": "150:196",
+            "gravity": "center",
+            "flex": 1,
+            "action": {
+              "type": "postback",
+              "data": "rice_class"
+            }
+          },
+          {
+            "type": "image",
+            "url": "https://d3l76hx23vw40a.cloudfront.net/material/53.jpg",
+            "size": "5xl",
+            "aspectMode": "cover",
+            "aspectRatio": "150:196",
+            "gravity": "center",
+            "flex": 1,
+            "action": {
+              "type": "postback",
+              "data": "noodle_class"
+            }
+          }
+        ]
+      },
+      {
+        "type": "box",
+        "layout": "horizontal",
+        "contents": [
+          {
+            "type": "image",
+            "url": "https://tw.savorjapan.com/gg/content_image/t0268_001.jpg",
+            "size": "5xl",
+            "aspectMode": "cover",
+            "aspectRatio": "150:196",
+            "gravity": "center",
+            "flex": 1,
+            "action": {
+              "type": "postback",
+              "data": "hot_pot_class"
+            }
+          },
+          {
+            "type": "image",
+            "url": "https://blackmomo.tw/wp-content/uploads/221213-P000.jpg",
+            "size": "5xl",
+            "aspectMode": "cover",
+            "aspectRatio": "150:196",
+            "gravity": "center",
+            "flex": 1,
+            "action": {
+              "type": "postback",
+              "data": "dessert_class"
+            }
+          }
+        ]
+      }
+    ],
+    "paddingAll": "0px"
+  }
+}
+    return contents

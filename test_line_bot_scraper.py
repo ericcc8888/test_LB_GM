@@ -24,7 +24,9 @@ if channel_access_token is None:
 handler = WebhookHandler(channel_secret)
 line_bot_api = LineBotApi(channel_access_token)
 
+#======================================================
 line_bot_scraper = line_flex.line_bot_scraper_ifoodie
+user_states = {}
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -56,6 +58,6 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, flex_message)
     else:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有找到相關餐廳資訊。"))
-
+#========================================================================================
 if __name__ == "__main__":
     app.run(debug=True)
