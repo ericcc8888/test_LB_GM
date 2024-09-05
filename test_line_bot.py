@@ -3,9 +3,8 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.models import MessageEvent, TextMessage, LocationMessage, TextSendMessage, FlexSendMessage, PostbackEvent
 from linebot.exceptions import InvalidSignatureError
 from API_KEYS import get_api_keys
-from line_flex import line_store_flex, flex_formmat
+from line_flex import line_store_flex, flex_formmat, big_food_class, rice_class, noodle_class, dessert_class, hot_pot_class, line_bot_scraper_ifoodie, ifoodie_class
 import sys, googlemaps, requests
-import line_flex
 
 app = Flask(__name__)
 
@@ -39,79 +38,129 @@ def callback():
     return 'OK'
 
 #==============================================================
-line_bot_scraper = line_flex.line_bot_scraper_ifoodie
-user_states = {}
-user_functions = {} # 用戶選擇的功能
-user_food_preferences = {} # 用戶想吃的食物
+user_states = 0
+food_preference = ''
+# user_functions = {} # 用戶選擇的功能
+# user_food_preferences = {} # 用戶想吃的食物
 
 # 處理文字訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    user_id = event.source.user_id
+    global user_states
+    global food_preference
     user_message = event.message.text.strip()
     # 讓使用者選擇使用的功能
     if user_message == "美食推薦":
-        text = "請主人輸入想查找的地區"
-        text_message = TextSendMessage(text=text)
-        line_bot_api.reply_message(event.reply_token, text_message)
-        user_functions[user_id] = "美食推薦"  # 設定用戶選擇的功能為「美食推薦」
+        flex_message = FlexSendMessage(
+            alt_text='This is a Flex Message',
+            contents=ifoodie_class()
+            )
+        line_bot_api.reply_message(event.reply_token, flex_message)
+        user_states = 1  # 設定用戶選擇的功能為「美食推薦」
 
     elif user_message == "附近美食":
-        text = "請輸入想要查詢的食物類型"
+        flex_message = FlexSendMessage(
+            alt_text='This is a Flex Message',
+            contents=big_food_class()
+            )
+        line_bot_api.reply_message(event.reply_token, flex_message)
+        text = "請點擊想要查詢的食物類型"
         text_message = TextSendMessage(text=text)
-        line_bot_api.reply_message(event.reply_token, text_message)
-        user_functions[user_id] = "附近美食"  # 設定用戶選擇的功能為「附近美食」
-    # 根據使用者選擇的功能來運行
-    elif user_id in user_functions:
-        if user_functions[user_id] == "附近美食":
-            user_food_preferences[user_id] = user_message  # 保存用戶的食物偏好
-            text = "請傳送主人的定位資訊"
-            text_message = TextSendMessage(text=text)
-            line_bot_api.reply_message(event.reply_token, text_message)
+        line_bot_api.push_message(event.source.user_id, text_message)
+        user_states = 2  # 設定用戶選擇的功能為「附近美食」
 
-        elif user_functions[user_id] == "美食推薦":
-            area = user_message
-            ifoodie = line_bot_scraper(area)
-            flex_message_datas = ifoodie.scrape()
-            if flex_message_datas:
-                flex_message = FlexSendMessage(
-                    alt_text="美食推薦",
-                    contents={
-                        "type": "carousel",
-                        "contents": flex_message_datas
-                    }
-                )
-                line_bot_api.reply_message(event.reply_token, flex_message)
-            else:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有找到相關餐廳資訊。"))
+    elif user_states == 3:
+        food_preference =  event.message.text  # 保存用戶的偏好
+        text = "請傳送主人的定位資訊"
+        text_message = TextSendMessage(text)
+        line_bot_api.push_message(event.source.user_id, text_message)
+
+    #根據使用者選擇的功能來運行
+    elif user_states == 1:       
+        area = user_message
+        ifoodie = line_bot_scraper_ifoodie(area)
+        flex_message_datas = ifoodie.scrape()
+        if flex_message_datas:
+            flex_message = FlexSendMessage(
+                alt_text="美食推薦",
+                contents={
+                    "type": "carousel",
+                    "contents": flex_message_datas
+                }
+            )
+            line_bot_api.reply_message(event.reply_token, flex_message)
+            user_states = 0            
+        else:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有找到相關餐廳資訊。"))
+            user_states = 0
 
     else:
         text = "請主人輸入想使用的功能"
         text_message = TextSendMessage(text=text)
         line_bot_api.reply_message(event.reply_token, text_message)
 
+    # print(user_functions[user_id])
+
+
+@handler.add(PostbackEvent)
+#傳送食物細分的圖卡
+def handle_postback(event):
+    global user_states
+    data = event.postback.data
+    if data == "rice_class":
+        flex_message = FlexSendMessage(alt_text="米飯類選擇", contents=rice_class())
+        line_bot_api.reply_message(event.reply_token, flex_message)
+        text = "請點選圖卡告訴我你想吃甚麼飯，上述沒有想吃的也可以打字輸入呦"
+        text_message = TextSendMessage(text=text)
+        line_bot_api.push_message(event.source.user_id, text_message)
+        user_states = 3
+        
+    elif data == "noodle_class":
+        flex_message = FlexSendMessage(alt_text="麵類選擇", contents=noodle_class())
+        line_bot_api.reply_message(event.reply_token, flex_message)
+        text = "請點選圖卡告訴我你想吃甚麼麵，上述沒有想吃的也可以打字輸入呦"
+        text_message = TextSendMessage(text=text)
+        line_bot_api.push_message(event.source.user_id, text_message)
+        user_states = 3
+    elif data == "hot_pot_class":
+        flex_message = FlexSendMessage(alt_text="火鍋選擇", contents=hot_pot_class())
+        line_bot_api.reply_message(event.reply_token, flex_message)
+        text = "請點選圖卡告訴我你想吃甚麼火鍋，上述沒有想吃的也可以打字輸入呦"
+        text_message = TextSendMessage(text=text)
+        line_bot_api.push_message(event.source.user_id, text_message)
+        user_states = 3
+
+    elif data == "dessert_class":
+        flex_message = FlexSendMessage(alt_text="點心選擇", contents=dessert_class())
+        line_bot_api.reply_message(event.reply_token, flex_message)
+        text = "請點選圖卡告訴我你想吃甚麼風格的點心，上述沒有想吃的也可以打字輸入呦"
+        text_message = TextSendMessage(text=text)
+        line_bot_api.push_message(event.source.user_id, text_message)
+        user_states = 3
+
 # 處理位置訊息
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
-    user_id = event.source.user_id
+    global user_states
+    global food_preference
     location = event.message
-    user_function = user_functions.get(user_id, None)
-    food_preference = user_food_preferences.get(user_id, "美食")  # 默認為「美食」
 
-    if user_function == "附近美食":
+    if user_states == 3:
         flex_message = FlexSendMessage(
             alt_text='This is a Flex Message',
             contents=get_store_info(location, food_preference)  # 使用用戶的食物偏好
         )
         line_bot_api.reply_message(event.reply_token, flex_message)
+        user_states = 0
     else:
         text_message = TextSendMessage(text="請先選擇「附近美食」以傳送您的定位資訊。")
         line_bot_api.reply_message(event.reply_token, text_message)
 
 #==============================================================
-def get_store_info(location, need_food, max_results=10):
+def get_store_info(location, food_preference):
+    max_results=10
     origin_location = {'lat': location.latitude, 'lng': location.longitude}
-    places_result = gmaps.places_nearby(location=origin_location, radius=500, keyword=need_food, language="zh-TW")
+    places_result = gmaps.places_nearby(location=origin_location, radius=500, keyword=food_preference, language="zh-TW")
 
     places_text = []
     flex_message_datas = []
@@ -162,5 +211,25 @@ def get_photo_url(photo_reference, max_width=400):
     url = f"{base_url}?{requests.compat.urlencode(params)}"
     return url
 
+def delete_all_rich_menus():
+    try:
+        rich_menu_list = line_bot_api.get_rich_menu_list()
+        for rich_menu in rich_menu_list:
+            print(f"正在刪除 Rich Menu: {rich_menu.rich_menu_id}")
+            delete_rich_menu(rich_menu.rich_menu_id)
+    except Exception as e:
+        print(f"獲取 Rich Menu 列表時發生錯誤: {e}")
+    # 刪除指定的 Rich Menu
+def delete_rich_menu(rich_menu_id):
+    try:
+        line_bot_api.delete_rich_menu(rich_menu_id)
+        print(f"Rich Menu {rich_menu_id} 已成功刪除")
+    except Exception as e:
+        print(f"刪除 Rich Menu 時發生錯誤: {e}")
+
 if __name__ == "__main__":
+    delete_all_rich_menus()
     app.run(debug=True)
+
+
+
