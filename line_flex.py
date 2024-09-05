@@ -351,8 +351,8 @@ def ifoodie_class():
         "height": "sm",
         "action": {
           "type": "message",
-          "label": "台北市",
-          "text": "台北市"
+          "label": "台北",
+          "text": "台北"
         }
       },
       {
@@ -361,8 +361,8 @@ def ifoodie_class():
         "height": "sm",
         "action": {
           "type": "message",
-          "label": "台中市",
-          "text": "台中市"
+          "label": "台中",
+          "text": "台中"
         }
       },
       {
@@ -371,8 +371,8 @@ def ifoodie_class():
         "height": "sm",
         "action": {
           "type": "message",
-          "label": "台南市",
-          "text": "台南市"
+          "label": "台南",
+          "text": "台南"
         }
       },
       {
@@ -381,8 +381,8 @@ def ifoodie_class():
         "height": "sm",
         "action": {
           "type": "message",
-          "label": "台東市",
-          "text": "台東市"
+          "label": "台東",
+          "text": "台東"
         }
       }
     ],
