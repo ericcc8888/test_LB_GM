@@ -793,3 +793,22 @@ def hot_pot_class():
 }
     
     return contents
+
+def no_search():
+    contents ={
+  "type": "bubble",
+  "size": "hecto",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "附近沒有您想搜尋的食物類型",
+        "weight": "bold",
+        "size": "md"
+      }
+    ]
+  }
+}
+    return contents
